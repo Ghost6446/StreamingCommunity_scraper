@@ -1,0 +1,7 @@
+bs4
+selenium-wire
+selenium
+webdriver-manager
+requests
+functools
+multiprocess
