@@ -1,7 +1,9 @@
 bs4
-selenium-wire
+requests
+tqdm
 selenium
+selenium-wire
 webdriver-manager
 requests
-functools
 multiprocess
+lxml
