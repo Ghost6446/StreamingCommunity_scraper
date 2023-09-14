@@ -1,9 +1,8 @@
 # 4.08.2023 -> 14.09.2023
 
 # Import
-import os, re, glob, time, tqdm, requests, subprocess, shutil
+import os, glob, time, tqdm, requests, shutil, ffmpeg
 from functools import partial
-from requests.models import Response
 from multiprocessing.dummy import Pool
 
 # [ util ]
@@ -33,7 +32,9 @@ def save_in_part(folder_ts, merged_mp4):
         with open("concat.txt", "w") as f:
             for i in range(start, end):
                 f.write(f"file {ordered_ts_names[i]} \n")
-        subprocess.run(["ffmpeg", "-f", "concat", "-i", "concat.txt", "-codec", "copy", f"{part}.mp4"], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                
+        ffmpeg.input("concat.txt", format='concat', safe=0).output(f"{part}.mp4", c='copy', loglevel="quiet").run()
+        #subprocess.run(["ffmpeg", "-f", "concat", "-i", "concat.txt", "-codec", "copy", f"{part}.mp4"], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         
     # Save first part
     save_part_ts(start, end, part)
@@ -57,7 +58,8 @@ def save_in_part(folder_ts, merged_mp4):
     with open("part_list.txt", 'w') as f:
         for mp4_fname in list_mp4_part:
             f.write(f"file {mp4_fname}\n")
-    subprocess.run(['ffmpeg', "-f", "concat", "-i", "part_list.txt", '-codec', 'copy', merged_mp4], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    ffmpeg.input("part_list.txt", format='concat', safe=0).output(merged_mp4, c='copy', loglevel="quiet").run()
+    #subprocess.run(['ffmpeg', "-f", "concat", "-i", "part_list.txt", '-codec', 'copy', merged_mp4], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     print("\r")
 
 # [ func ]
@@ -72,14 +74,14 @@ def download_ts_file(ts_url: str, store_dir: str, headers):
 
         # Download
         ts_res = requests.get(ts_url, headers=headers)
-        time.sleep(0.5)
 
-        # Check if exist and save
-        if isinstance(ts_res, Response) and ts_res.status_code == 200:
+        if(ts_res.status_code == 200):
             with open(ts_dir, 'wb+') as f:
                 f.write(ts_res.content)
         else:
             print(f"Failed to download streaming file: {ts_name}.") 
+
+        time.sleep(0.5)
 
 def download(m3u8_link, m3u8_content, m3u8_headers, merged_mp4):
 
