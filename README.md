@@ -10,7 +10,6 @@ Install requirement
 
 ```bash
     pip install -r requirement.txt
-    install "ffmpeg" https://ffmpeg.org/download.html and add to path
 ```
     
 ## Run Locally
