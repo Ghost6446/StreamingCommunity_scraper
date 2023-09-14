@@ -7,6 +7,8 @@ from util.m3u8 import download
 # Import
 from bs4 import BeautifulSoup
 from seleniumwire.utils import decode
+from rich import print as rprint
+from rich.prompt import Prompt
 
 # Class init
 driver = Driver()
@@ -23,6 +25,7 @@ def get_film(vid_id):
     m3u8_headers = ""
     is_m3u8_find = False
 
+    rprint("[green]Find m3u8")
     for req in driver.driver.requests:
         if("?type=" in req.url):
             is_m3u8_find = True
@@ -37,11 +40,12 @@ def get_film(vid_id):
 
 
     if(is_m3u8_find):
+        rprint("[green]Start download ...")
         download(m3u8_link, m3u8_data, m3u8_headers, merged_mp4=vid_id+".mp4")
     else:
-        print("ERROR MISSIN KEY OR M3U8")
+        rprint("[red]ERROR MISSIN KEY OR M3U8")
 
     driver.close()
 
-get_film(input("INSERT KEY FILM => ").replace(" ", ""))
+get_film(Prompt.ask("[cyan]Insert film key ").replace(" ", ""))
 

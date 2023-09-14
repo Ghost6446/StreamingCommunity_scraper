@@ -7,5 +7,7 @@ selenium-wire
 webdriver-manager
 
 tqdm
+rich
 multiprocess
+
 ffmpeg-python

@@ -1,9 +1,17 @@
 # 4.08.2023 -> 14.09.2023
 
 # Import
-import os, glob, time, tqdm, requests, shutil, ffmpeg
+import os, glob, time, requests, shutil, ffmpeg
 from functools import partial
 from multiprocessing.dummy import Pool
+from tqdm.rich import tqdm
+from rich import print as rprint
+
+# Disable warning
+import warnings
+from tqdm import TqdmExperimentalWarning
+warnings.filterwarnings("ignore", category=TqdmExperimentalWarning)
+
 
 # [ util ]
 def delete_file(path):
@@ -27,14 +35,14 @@ def save_in_part(folder_ts, merged_mp4):
 
     # Create mp4 from start ts to end
     def save_part_ts(start, end, part):
-        print("PROCESS PART => ", part, end = "\r")
+        rprint(f"[blue]Process part [green][[red]{part}[green]]")
         list_mp4_part.append(f"{part}.mp4")
+
         with open("concat.txt", "w") as f:
             for i in range(start, end):
                 f.write(f"file {ordered_ts_names[i]} \n")
                 
         ffmpeg.input("concat.txt", format='concat', safe=0).output(f"{part}.mp4", c='copy', loglevel="quiet").run()
-        #subprocess.run(["ffmpeg", "-f", "concat", "-i", "concat.txt", "-codec", "copy", f"{part}.mp4"], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         
     # Save first part
     save_part_ts(start, end, part)
@@ -55,13 +63,12 @@ def save_in_part(folder_ts, merged_mp4):
             break
 
     # Merge all part
+    rprint("[purple]Merge mp4")
     with open("part_list.txt", 'w') as f:
         for mp4_fname in list_mp4_part:
             f.write(f"file {mp4_fname}\n")
     ffmpeg.input("part_list.txt", format='concat', safe=0).output(merged_mp4, c='copy', loglevel="quiet").run()
-    #subprocess.run(['ffmpeg', "-f", "concat", "-i", "part_list.txt", '-codec', 'copy', merged_mp4], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    print("\r")
-
+    
 # [ func ]
 def download_ts_file(ts_url: str, store_dir: str, headers):
 
@@ -100,13 +107,14 @@ def download(m3u8_link, m3u8_content, m3u8_headers, merged_mp4):
             if not ts_url.startswith("http"):
                 ts_url = m3u8_http_base + ts_url
             ts_url_list.append(ts_url)
-
+    rprint(f"[blue]Find [white]=> [red]{len(ts_url_list)}[blue] ts file to download")
 
     #  Using multithreading to download all ts file
     os.makedirs("temp_ts", exist_ok=True)
+
     pool = Pool(20)
     gen = pool.imap(partial(download_ts_file, store_dir="temp_ts", headers=m3u8_headers), ts_url_list)
-    for _ in tqdm.tqdm(gen, total=len(ts_url_list), desc="Download "):
+    for _ in tqdm(gen, total=len(ts_url_list), unit="bytes", unit_scale=True, unit_divisor=1024, desc="[yellow]Download"):
         pass
     pool.close()
     pool.join()
@@ -116,5 +124,6 @@ def download(m3u8_link, m3u8_content, m3u8_headers, merged_mp4):
     os.chdir("..")
 
     # Clean temp file
+    rprint("[blue]Clean")
     shutil.move("temp_ts\\"+merged_mp4 , ".")
     shutil.rmtree("temp_ts")
