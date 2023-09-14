@@ -1,7 +1,7 @@
 # 4.08.2023 -> 14.09.2023
 
 # Import
-import os, glob, time, requests, shutil, ffmpeg
+import re, os, glob, time, requests, shutil, ffmpeg
 from functools import partial
 from multiprocessing.dummy import Pool
 from tqdm.rich import tqdm
@@ -20,9 +20,9 @@ def delete_file(path):
 
 def save_in_part(folder_ts, merged_mp4):
 
-    # Get list of ts file order
+    # Get list of ts file in order
     os.chdir(folder_ts)
-    ordered_ts_names = glob.glob("*.ts")
+    ordered_ts_names = sorted(glob.glob("*.ts"), key=lambda x:float(re.findall("(\d+)", x.split("_")[1])[0]))
 
     open("concat.txt", "wb")
     open("part_list.txt", "wb")
@@ -38,11 +38,11 @@ def save_in_part(folder_ts, merged_mp4):
         rprint(f"[blue]Process part [green][[red]{part}[green]]")
         list_mp4_part.append(f"{part}.mp4")
 
-        with open("concat.txt", "w") as f:
+        with open(f"{part}_concat.txt", "w") as f:
             for i in range(start, end):
                 f.write(f"file {ordered_ts_names[i]} \n")
                 
-        ffmpeg.input("concat.txt", format='concat', safe=0).output(f"{part}.mp4", c='copy', loglevel="quiet").run()
+        ffmpeg.input(f"{part}_concat.txt", format='concat', safe=0).output(f"{part}.mp4", c='copy', loglevel="quiet").run()
         
     # Save first part
     save_part_ts(start, end, part)

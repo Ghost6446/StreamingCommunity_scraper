@@ -14,6 +14,9 @@ from rich.prompt import Prompt
 driver = Driver()
 driver.create(headless=True)
 
+# Variable
+quality = 720
+
 # [ function ] main
 def get_film(vid_id):
 
@@ -27,7 +30,7 @@ def get_film(vid_id):
 
     rprint("[green]Find m3u8")
     for req in driver.driver.requests:
-        if("?type=" in req.url):
+        if("?type=" in req.url and str(quality) in req.url):
             is_m3u8_find = True
 
             # Get response data
