@@ -1,15 +1,16 @@
-# 5.07.2023 -> 12.09.2023
+# 5.07.2023 -> 12.09.2023 -> 17.09.2023
 
 # General import
 import os, time, subprocess, sys
 from sys import platform
 from bs4 import BeautifulSoup
-
 from seleniumwire import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-from rich import print as rprint
+# Class import
+from util.util import console, close_chrome
+
 
 class Driver:
 
@@ -18,21 +19,9 @@ class Driver:
     driver = None
 
     def __init__(self) -> None:
-
         self.service = Service(ChromeDriverManager().install())
-
         self.options = webdriver.ChromeOptions()
-
-        # For linux
-        rprint("[green]Close all instance of chrome")
-        if platform == "linux" or platform == "linux2":
-            try: subprocess.check_output("kill -9 chrome.exe",  shell=True, creationflags=0x08000000) 
-            except: pass
-
-        # For win
-        elif platform == "win32":
-            try: subprocess.check_output("TASKKILL /IM chrome.exe /F",  shell=True, creationflags= 0x08000000) 
-            except: pass
+        close_chrome()
             
     def create(self, headless=False, minimize=False):
 
@@ -62,14 +51,13 @@ class Driver:
             self.driver.get(url)
             time.sleep(sleep)
         except:
-            rprint("[red]Cant get the page")
+            console.log("[red]Cant get the page")
             sys.exit(0)
 
     def get_soup(self):
         return BeautifulSoup(self.driver.page_source, "lxml")
 
     def close(self): 
-        rprint("[red]Close driver")
-
+        console.log("[green]Close driver")
         self.driver.close()
         self.driver.quit()

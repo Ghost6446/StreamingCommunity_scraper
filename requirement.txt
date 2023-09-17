@@ -1,13 +1,11 @@
 bs4
 requests
 lxml
-
 selenium
 selenium-wire
 webdriver-manager
-
 tqdm
 rich
 multiprocess
-
 ffmpeg-python
+
