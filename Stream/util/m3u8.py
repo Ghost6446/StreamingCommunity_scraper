@@ -7,7 +7,7 @@ from multiprocessing.dummy import Pool
 from tqdm.rich import tqdm
 
 # Class import
-from util.util import console
+from Stream.util.util import console
 
 # Disable warning
 import warnings

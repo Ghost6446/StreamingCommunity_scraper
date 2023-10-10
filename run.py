@@ -1,9 +1,10 @@
 # 10.08.2023 -> 11.08.2023 -> 14.09.2023 -> 17.09.2023 -> 10.10.2023
 
 # Class import
-from util.Driver import Driver
-from util.m3u8 import download
-from util.util import console, msg
+from Stream.util.Driver import Driver
+from Stream.util.m3u8 import download
+from Stream.util.util import console, msg
+from Stream.update import main_update
 
 # Import
 from bs4 import BeautifulSoup
@@ -11,11 +12,10 @@ from seleniumwire.utils import decode
 
 
 # Class init
+main_update()
 driver = Driver()
-driver.create(headless=False)
+driver.create(True)
 
-# Variable
-quality = 480 # 480 | 720 | 1080
 
 # [ function ] main
 def get_film(vid_id):
@@ -28,13 +28,14 @@ def get_film(vid_id):
     for req in driver.driver.requests:
 
         if("enc.key" in req.url): 
-            console.log(f"[blue]KEY FIND:  [red]{req.url}")
+            console.log(f"[green]KEY FIND:  [red]{req.url}")
 
             # Get response data
             response_body = decode(req.response.body, req.response.headers.get('Content-Encoding', 'identity'))
             m3u8['key'] = "".join(["{:02x}".format(c) for c in response_body])
 
-        if("?type=" in req.url and str(quality) in req.url):
+        if("type" in req.url):
+            console.log(f"[green]M3U8 FIND:  [red]{req.url}")
 
             # Get response data
             m3u8_data = decode(req.response.body, req.response.headers.get('Content-Encoding', 'identity'))
