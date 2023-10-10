@@ -1,4 +1,4 @@
-# 10.08.2023 -> 11.08.2023 -> 14.09.2023 -> 17.09.2023
+# 10.08.2023 -> 11.08.2023 -> 14.09.2023 -> 17.09.2023 -> 10.10.2023
 
 # Class import
 from util.Driver import Driver
@@ -12,15 +12,15 @@ from seleniumwire.utils import decode
 
 # Class init
 driver = Driver()
-driver.create(headless=True)
+driver.create(headless=False)
 
 # Variable
-quality = 720
+quality = 480 # 480 | 720 | 1080
 
 # [ function ] main
 def get_film(vid_id):
 
-    url = "https://streamingcommunity.expert/watch/" + vid_id
+    url = f"https://streamingcommunity.black/watch/{vid_id}"
     driver.get_page(url=url, sleep=3)
     m3u8 = {"url": "", "data": "", "req_header": "", "key": ""}
 
@@ -44,12 +44,11 @@ def get_film(vid_id):
             m3u8['req_header'] = dict(req.headers)
             m3u8['url'] = req.url
 
-
-    if(m3u8["url"] != ""):
+    if(m3u8['url'] != ""):
         console.log("[blue]Start download ...")
-        download(m3u8["url"], m3u8['data'], m3u8['req_header'], m3u8['key'], vid_id+".mp4")
+        download(m3u8['url'], m3u8['data'], m3u8['req_header'], m3u8['key'], vid_id+".mp4")
     else:
-        console.log("[red]ERROR MISSIN KEY OR M3U8")
+        console.log("[red]Try reduce quality")
 
     driver.close()
 
