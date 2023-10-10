@@ -13,7 +13,7 @@ def forceMergeFlatDir(srcDir, dstDir):
         forceCopyFile(srcFile, dstFile)
 
 def forceCopyFile (sfile, dfile):
-    if os.path.isfile(sfile) and ".git" not in sfile and "Run.py" in sfile:
+    if os.path.isfile(sfile):
         try:
             shutil.copyfile(sfile, dfile)
         except: 
