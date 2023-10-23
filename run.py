@@ -20,7 +20,7 @@ driver.create(True)
 # [ function ] main
 def get_film(vid_id):
 
-    url = f"https://streamingcommunity.black/watch/{vid_id}"
+    url = f"https://streamingcommunity.at/watch/{vid_id}"
     driver.get_page(url=url, sleep=3)
     m3u8 = {"url": "", "data": "", "req_header": "", "key": ""}
 
