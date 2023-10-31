@@ -3,6 +3,9 @@
 
 Script to download film from streaming community
 
+## Requirement
+python 3.9 -> https://www.python.org/downloads/release/python-390/
+openssl -> https://slproweb.com/products/Win32OpenSSL.html
 
 ## Installation
 
