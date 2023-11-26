@@ -27,10 +27,10 @@ class Video_Decoder(object):
         self.iv = x_key["IV"].lstrip("0x") if "IV" in x_key.keys() else ""
 
     def decode_aes_128(self, video_fname: str):
-        frame_name = video_fname.split("\\")[-1].split("-")[0] + ".ts"
+        frame_name = video_fname.split(os.path.sep)[-1].split("-")[0] + ".ts"
 
-        if(not os.path.isfile("ou_ts/"+frame_name)):
-            subprocess.run(["openssl","aes-128-cbc","-d","-in", video_fname,"-out", "ou_ts/"+frame_name,"-nosalt","-iv", self.iv,"-K", self.uri ])
+        if(not os.path.isfile(os.path.join("ou_ts", frame_name))):
+            subprocess.run(["openssl","aes-128-cbc","-d","-in", video_fname,"-out", os.path.join("ou_ts", frame_name),"-nosalt","-iv", self.iv,"-K", self.uri ])
 
     def __call__(self, video_fname: str):
         if self.method == "AES-128":
@@ -50,6 +50,7 @@ def save_in_part(folder_ts, merged_mp4):
 
     # Get list of ts file in order
     os.chdir(folder_ts)
+
     try: ordered_ts_names = sorted(glob.glob("*.ts"), key=lambda x:float(re.findall("(\d+)", x.split("_")[1])[0]))
     except: 
         try: ordered_ts_names = sorted(glob.glob("*.ts"), key=lambda x:float(re.findall("(\d+)", x.split("-")[1])[0]))
@@ -103,24 +104,35 @@ def save_in_part(folder_ts, merged_mp4):
 
 # [ donwload ]
 def download_ts_file(ts_url: str, store_dir: str, headers):
-
     # Get ts name and folder
     ts_name = ts_url.split('/')[-1].split("?")[0]
-    ts_dir = store_dir + "/" + ts_name
+    ts_dir = os.path.join(store_dir, ts_name)
 
     # Check if exist
     if(not os.path.isfile(ts_dir)):
+        retry = 1
+        while retry <= 10:
+            try:
+                # Download
+                ts_res = requests.get(ts_url, headers=headers)
 
-        # Download
-        ts_res = requests.get(ts_url, headers=headers)
+                if(ts_res.status_code == 200):
+                    with open(ts_dir, 'wb+') as f:
+                        f.write(ts_res.content)
+                        return
+                else:
+                    console.log(f"[red]Failed to download streaming file: {ts_name}.")
 
-        if(ts_res.status_code == 200):
-            with open(ts_dir, 'wb+') as f:
-                f.write(ts_res.content)
-        else:
-            print(f"Failed to download streaming file: {ts_name}.") 
+                time.sleep(0.5)
 
-        time.sleep(0.5)
+            except Exception as e:
+                console.log(f'[yellow]Failed to download: {ts_name} - Retry: #{retry}')
+                time.sleep(0.5*retry)
+
+            retry+=1
+
+        console.log(f"[red]Failed to download streaming file: {ts_name}.")
+
 
 def download(m3u8_link, m3u8_content, m3u8_headers, decrypt_key, merged_mp4):
 
@@ -163,8 +175,11 @@ def download(m3u8_link, m3u8_content, m3u8_headers, decrypt_key, merged_mp4):
     pool.close()
     pool.join()
 
+    console.log("[green]ALL PARTS DOWNLOADED")
+
+
     if decrypt_key != "":
-        for ts_fname in tqdm(glob.glob("temp_ts\*.ts"), desc="[yellow]Decoding"):
+        for ts_fname in tqdm(glob.glob(os.path.join(os.path.curdir, "temp_ts", "*.ts")), desc="[yellow]Decoding"):
             video_decoder(ts_fname)
 
         # Start to merge all *.ts files
@@ -177,8 +192,11 @@ def download(m3u8_link, m3u8_content, m3u8_headers, decrypt_key, merged_mp4):
     os.chdir("..")
     console.log("[green]Clean")
 
-    if decrypt_key != "": shutil.move("ou_ts\\"+merged_mp4 , ".")
-    else: shutil.move("temp_ts\\"+merged_mp4 , ".")
+    os.makedirs("videos", exist_ok=True)
+
+
+    if decrypt_key != "": shutil.move(os.path.join(os.path.curdir, "ou_ts", merged_mp4) , "videos")
+    else: shutil.move(os.path.join(os.path.curdir, "temp_ts", merged_mp4) , "videos")
 
     shutil.rmtree("ou_ts", ignore_errors=True)
     shutil.rmtree("temp_ts", ignore_errors=True)
