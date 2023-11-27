@@ -2,7 +2,6 @@
 
 # General import
 import os, time, subprocess, sys
-from sys import platform
 from bs4 import BeautifulSoup
 from seleniumwire import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -29,7 +28,11 @@ class Driver:
             self.options.add_argument("headless")
 
         self.options.add_argument("--window-size=1280,1280")
-        self.options.add_argument('--user-data-dir=C:/Users/'+os.getlogin()+'/AppData/Local/Google/Chrome/User Data')
+
+        if sys.platform in ("linux", "linux2"): # For Linux
+            self.options.add_argument('--user-data-dir='+os.path.join(os.path.curdir, 'chrome-user-data'))
+        elif sys.platform == "win32": # For Windows
+            self.options.add_argument('--user-data-dir='+os.path.join(os.getenv('LOCALAPPDATA'), 'Google', 'Chrome', 'User Data'))
 
         self.options.add_experimental_option("useAutomationExtension", True)
         self.options.add_experimental_option("excludeSwitches",["enable-automation"])

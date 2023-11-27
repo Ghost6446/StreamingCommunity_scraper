@@ -9,18 +9,12 @@ from Stream.update import main_update
 # Import
 from bs4 import BeautifulSoup
 from seleniumwire.utils import decode
-
-
-# Class init
-main_update()
-driver = Driver()
-driver.create(True)
-
+from sys import platform as sys_platform
 
 # [ function ] main
 def get_film(vid_id):
 
-    url = f"https://streamingcommunity.at/watch/{vid_id}"
+    url = f"https://streamingcommunity.care/watch/{vid_id}"
     driver.get_page(url=url, sleep=3)
     m3u8 = {"url": "", "data": "", "req_header": "", "key": ""}
 
@@ -47,11 +41,21 @@ def get_film(vid_id):
 
     if(m3u8['url'] != ""):
         console.log("[blue]Start download ...")
-        download(m3u8['url'], m3u8['data'], m3u8['req_header'], m3u8['key'], vid_id+".mp4")
+        download(m3u8['url'], m3u8['data'], m3u8['req_header'], m3u8['key'], vid_id.replace("?","_").replace("=","_") + ".mp4")
     else:
-        console.log("[red]Try reduce quality")
+        console.log("[red]Try reducing quality")
 
     driver.close()
 
-get_film(msg.ask("[cyan]Insert film key ").replace(" ", ""))
+if __name__ == '__main__':
+    # Class init
+    if sys_platform == "win32": # For Windows
+        main_update()
+    elif sys_platform in ("linux", "linux2"): # For Linux
+        # main_update() # not yet implemented/working
+        print('')
 
+    driver = Driver()
+    driver.create(True)
+
+    get_film(msg.ask("[cyan]Insert film key ").replace(" ", ""))
