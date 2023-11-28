@@ -1,11 +1,11 @@
 # 13.09.2023
 
 # General import
-import os, requests, zipfile, time
+import os, requests, zipfile, time, sys
 from rich.console import Console
 
 # Class import
-from Stream.util.os import copyTree, rem_folder
+from Stream.upload.os import copyTree, rem_folder
 
 # Variable
 console = Console()
@@ -16,6 +16,7 @@ reposity_name = "StreamingCommunity_scraper"
 main = os.path.abspath(os.path.dirname(__file__))
 base = "\\".join(main.split("\\")[:-1])
 
+# Get folder version
 def get_install_version():
     about = {}
     with open(os.path.join(main, '__version__.py'), 'r', encoding='utf-8') as f:
@@ -25,10 +26,14 @@ def get_install_version():
 def main_update():
 
     # Get last version from req
-    json = requests.get(f"https://api.github.com/repos/ghost6446/{reposity_name}/releases").json()[0]
-    stargazers_count = requests.get(f"https://api.github.com/repos/ghost6446/{reposity_name}").json()['stargazers_count']
-    last_version = json['name']
-    version_note = json['body']
+    try:
+        json = requests.get(f"https://api.github.com/repos/ghost6446/{reposity_name}/releases").json()[0]
+        stargazers_count = requests.get(f"https://api.github.com/repos/ghost6446/{reposity_name}").json()['stargazers_count']
+        last_version = json['name']
+        version_note = json['body']
+    except:
+        console.log("[red]API rate limit exceeded")
+        sys.exit(0)
 
     # Info download
     down_count = json['assets'][0]['download_count']
@@ -54,14 +59,16 @@ def main_update():
         r = requests.get(down_url)
         open(f"temp/{down_name}", "wb").write(r.content)
 
+        # Extract last reposity
         console.log("[green]Extract file")
         with zipfile.ZipFile(f"temp/{down_name}", "a") as zip:
             zip.extractall("")
 
-        # Copy tree
+        # Copy tree with replace entire folder
         os.rename(f"{reposity_name}-main", reposity_name)
         copyTree(src=os.path.join(base, down_name.split(".")[0].replace("-main", "")) + "\\", dst=base + "\\")
 
+        # Remove temp folder
         console.log("[green]Clean ...")
         rem_folder("temp")
         rem_folder(reposity_name)
