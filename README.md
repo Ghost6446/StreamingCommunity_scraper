@@ -1,3 +1,6 @@
+<p align="center">
+	<img src="log.png" style="max-width: 55%;" alt="video working" />
+</p>
 
 
 # Streaming community downloader
@@ -5,13 +8,13 @@
 Script to download film from streaming community
 
 <p align="center">
-<img src="Stream/assets/run.gif" style="max-width: 55%;" alt="video working" />
+	<img src="Stream/assets/run.gif" style="max-width: 55%;" alt="video working" />
 </p>
 
 ## Requirement
 
 * python [3.9](https://www.python.org/downloads/release/python-390/)
-* [openssl](https://slproweb.com/products/Win32OpenSSL.html)
+* openssl [site](https://slproweb.com/products/Win32OpenSSL.html)
 
 ## Installation for WIN
 
