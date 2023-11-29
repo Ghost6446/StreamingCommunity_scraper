@@ -123,7 +123,7 @@ if __name__ == '__main__':
 
     # Upload to latest version
     console.log(f"[blue]Find system [white]=> [red]{sys.platform}")
-    #main_update()
+    main_update()
 
     # Create driver
     driver = Driver()

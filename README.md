@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="log.png" style="max-width: 55%;" alt="video working" />
+	<img src="Stream/assets/min_logo.png" style="max-width: 55%;" alt="video working" />
 </p>
 
 ## Streaming community downloader
