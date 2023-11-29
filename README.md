@@ -2,9 +2,6 @@
 	<img src="log.png" style="max-width: 55%;" alt="video working" />
 </p>
 
-
-# Streaming community downloader
-
 Script to download film from streaming community
 
 <p align="center">
