@@ -34,7 +34,15 @@ def get_film(vid_id):
     url = f"https://streamingcommunity.care/watch/{vid_id}"
     driver.get_page(url=url, sleep=3)
     page_title = driver.driver.title.split("-")[0].replace("\\", "").replace(",", "").strip()
-    console.log(f"[blue]Find title [white]=> [red]{page_title}") 
+
+    # If there is not title
+    if len(page_title) != 0:
+        console.log(f"[blue]Find title [white]=> [red]{page_title}")
+
+    # Use video id 
+    else:
+        console.log(f"[red]Cant find video title")
+        page_title = vid_id
 
     # --> Find info from all req
     console.log("[blue]Find all info ...")
@@ -68,8 +76,11 @@ def get_film(vid_id):
             m3u8['subtitle'] = req.url
 
     # Print info main language of film
-    params = dict(x.split('=') for x in m3u8['main_sub'].split('&'))
-    console.log(f"[green]Film language [white]=> [red]{params['rendition']}")
+    try:
+        params = dict(x.split('=') for x in m3u8['main_sub'].split('&'))
+        console.log(f"[green]Film language [white]=> [red]{params['rendition']}")
+    except:
+        console.log("[red]Cant find main subtitle for this video")
     
 
     # --> Download video or subtitle
@@ -99,12 +110,6 @@ def get_film(vid_id):
 
     else:
         console.log("[red]Cant find data of subtitle [SKIP]")
-
-    # 
-    query = m3u8['main_sub']
-    params = dict(x.split('=') for x in query.split('&'))
-    language = params['rendition']
-
 
     # Close driver
     driver.close()

@@ -1,43 +1,58 @@
 
-# streamingcommunity downloader
+
+# Streaming community downloader
 
 Script to download film from streaming community
 
+<p align="center">
+<img src="Stream/assets/run.gif" style="max-width: 55%;" alt="video working" />
+</p>
+
 ## Requirement
-python 3.9 -> https://www.python.org/downloads/release/python-390/
-openssl -> https://slproweb.com/products/Win32OpenSSL.html
 
-## Installation
+* python [3.9](https://www.python.org/downloads/release/python-390/)
+* [openssl](https://slproweb.com/products/Win32OpenSSL.html)
 
-Install requirement
+## Installation for WIN
+
+* requirement for library of python
 
 ```bash
-    pip install -r requirement.txt
+	pip install -r requirement.txt
 ```
-    
+
+## Installation for LINUX
+
+Package install:
+
+* python 3.9
+* pip
+* chrome 
+* ffmpeg
+
+
+Command:
+```bash
+	bash install.sh
+```
+
 ## Run Locally
 
-Clone the project
 ```bash
-  python run.py
+	python run.py
 ```
-
 
 ## Usage/Examples
 
 ```python
-    Insert key from url Ex.("https://streamingcommunity.bet/titles/899-mission-impossible"), Code to insert 899
+	url example film = "https://streamingcommunity.care/titles/6974-the-librarian-3-la-maledizione-del-calice-di-giuda"
+	key to insert = "6974"
 ```
 
-## For linux user
-After install python 3.9 and pip, run install.sh to download chrome and ffmpeg
-
-
 ## Tutorial
-URL => https://www.youtube.com/watch?v=5XTPAEw-WgE
 
+URL => https://www.youtube.com/watch?v=5XTPAEw-WgE
 
 ## Authors
 
 - [@Ghost6446](https://www.github.com/Ghost6446)
-
