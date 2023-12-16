@@ -15,6 +15,7 @@ import sys, os, time
 # Variable
 DONWLOAD_VIDEO = True
 DOWNLOAD_SUBTITLE = False
+DOMAIN = "cz"
 
 # [ function ] main
 def get_film(vid_id):
@@ -31,7 +32,7 @@ def get_film(vid_id):
     }
 
     # Get page of film id
-    url = f"https://streamingcommunity.care/watch/{vid_id}"
+    url = f"https://streamingcommunity.{DOMAIN}/watch/{vid_id}"
     driver.get_page(url=url, sleep=3)
     page_title = driver.driver.title.split("-")[0].replace("\\", "").replace(",", "").strip()
 
