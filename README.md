@@ -2,6 +2,9 @@
 	<img src="Stream/assets/min_logo.png" style="max-width: 55%;" alt="video working" />
 </p>
 
+## NEW REPO
+https://github.com/Ghost6446/StreamingCommunity_api
+
 ## Streaming community downloader
 
 Script to download film from streaming community
